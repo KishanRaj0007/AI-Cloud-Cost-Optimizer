@@ -35,13 +35,11 @@ public class CostDataProducer {
 
     @Scheduled(fixedRate = 2000)
     public void generateAndSendCostData() {
-        // Generate base data
         double cost = 0.5 + (10.0 - 0.5) * random.nextDouble();
         int daysAgo = random.nextInt(30);
         Instant historicalTimestamp = Instant.now().minus(daysAgo, ChronoUnit.DAYS);
         String instanceType = instanceTypes.get(random.nextInt(instanceTypes.size()));
 
-        // --- NEW: Generate Performance Metrics based on a random profile ---
         WorkloadProfile profile = profiles.get(random.nextInt(profiles.size()));
         Double cpu = 0.0;
         Double memory = 0.0;

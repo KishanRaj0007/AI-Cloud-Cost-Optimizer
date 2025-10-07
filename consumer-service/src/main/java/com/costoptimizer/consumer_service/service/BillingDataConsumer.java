@@ -14,10 +14,8 @@ public class BillingDataConsumer {
 
     @KafkaListener(topics = "${topic.name}", groupId = "cost-optimizer-group")
     public void listen(CostData data) {
-        // Every time a message comes from Kafka, this method is called.
-        // The JSON is automatically converted into a CostData object.
 
-        repository.save(data); // Save the data to MongoDB
+        repository.save(data);
 
         System.out.println("Received and saved data: " + data.getResourceId());
     }

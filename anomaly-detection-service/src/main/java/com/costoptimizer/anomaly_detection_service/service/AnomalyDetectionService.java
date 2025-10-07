@@ -21,10 +21,6 @@ public class AnomalyDetectionService {
     private IsolationForest model;
     private boolean isModelTrained = false;
 
-    /**
-     * This method runs automatically once, right after the service starts up.
-     * It's the perfect place to train our model on historical data.
-     */
     @PostConstruct
     public void trainModel() {
         System.out.println("Attempting to train anomaly detection model...");
@@ -35,36 +31,25 @@ public class AnomalyDetectionService {
             return;
         }
 
-        // --- Step 1: Feature Engineering ---
-        // We need to convert our CostData object into a numerical array (double[])
-        // that the ML model can understand. These are our "features".
         double[][] features = trainingData.stream()
                 .map(this::createFeatures)
                 .toArray(double[][]::new);
 
-        // --- Step 2: Train the Isolation Forest model ---
         model = IsolationForest.fit(features);
         isModelTrained = true;
         System.out.println("✅ Anomaly detection model trained successfully with " + trainingData.size() + " records.");
     }
 
-    /**
-     * This method listens to the Kafka topic in real-time.
-     */
     @KafkaListener(topics = "${topic.name}", groupId = "anomaly-detection-group")
     public void listenForCosts(CostData data) {
         if (!isModelTrained) {
-            // Don't try to predict if the model hasn't been trained yet.
             return;
         }
 
-        // --- Step 3: Predict on live data ---
-        // Convert the incoming data into the same feature format.
         double[] liveFeatures = createFeatures(data);
 
-        // The model.predict() method returns 1 for an outlier (anomaly) and 0 for an inlier (normal).
         double score = model.score(liveFeatures);
-        if (score > 0.75) { // You can tune this threshold based on your data
+        if (score > 0.75) { 
             System.out.printf("🚨 ANOMALY DETECTED 🚨: Service=%s, Cost=%.2f, Resource=%s, Region=%s, Score=%.3f%n",
                     data.getServiceName(), data.getCost(), data.getResourceId(), data.getRegion(), score);
         }
