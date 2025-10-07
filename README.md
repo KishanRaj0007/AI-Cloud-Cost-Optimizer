@@ -48,7 +48,7 @@ It acts as an **intelligent financial advisor** for cloud infrastructure by prov
 The system consists of **four independent microservices** communicating through a central **Kafka topic** and using **MongoDB** for persistence.
 
 *(Upload your LLD image to your GitHub repo and update the path below)*  
-![System LLD](./path/to/your/lld_diagram_image.png)
+![System LLD](LLD.png)
 
 ---
 
@@ -58,13 +58,13 @@ The system consists of **four independent microservices** communicating through 
 The system successfully identifies an anomalous cost spike in the real-time data stream.
 
 *(Upload your anomaly screenshot and update the path below)*  
-![Anomaly Detected](./path/to/your/anomaly_screenshot.png)
+![Anomaly Detected](Anomaly.png)
 
 ### Right-Sizing Recommendations
 The recommendation engine analyzes workload profiles and suggests more cost-effective instance types.
 
 *(Upload your recommendation screenshot and update the path below)*  
-![Right-Sizing Recommendation](./path/to/your/recommendation_screenshot.png)
+![Right-Sizing Recommendation](Recommendation.png)
 
 ---
 
