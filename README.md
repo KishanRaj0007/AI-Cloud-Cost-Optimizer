@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 # AI-Powered Cloud Cost Optimizer
+=======
+*AI-Powered Cloud Cost Optimizer*
+Overview
+This project is a backend system designed to help companies reduce their cloud spending on platforms like AWS, GCP, or Azure. It moves beyond simple cost reporting by using a microservice architecture and machine learning to proactively forecast future costs, detect spending anomalies in real-time, and recommend specific, actionable changes to optimize resource allocation.
+>>>>>>> 39d651ae6aa868f76dc87be0a2df3e50520760ee
 
 ## Overview
 This project is a backend system designed to help companies reduce their cloud spending on platforms like **AWS**, **GCP**, or **Azure**.  
@@ -84,3 +90,39 @@ The project contains **four microservices** that must be run in the correct orde
 ### 1. Clone the repository
 ```bash
 git clone <your-repo-url>
+<<<<<<< HEAD
+=======
+
+Start the infrastructure:
+Navigate to the root directory of the project (where docker-compose.yml is located) and run:
+
+docker-compose up -d
+
+This will start the Kafka, Zookeeper, and MongoDB containers.
+
+Start the data pipeline:
+Open two separate terminals.
+
+In the first terminal, navigate to the producer-service folder and run: mvn spring-boot:run
+
+In the second terminal, navigate to the consumer-service folder and run: mvn spring-boot:run
+
+Let these run for at least 1-2 minutes to generate sufficient historical data.
+
+Start the analytical services:
+You can now start the other services in any order in new terminals.
+
+Navigate to forecasting-service and run: mvn spring-boot:run
+
+Navigate to anomaly-detection-service and run: mvn spring-boot:run
+
+Navigate to recommendation-service and run: mvn spring-boot:run
+
+Test the API Endpoints:
+
+Get Forecast: http://localhost:8082/api/forecast?days=7
+
+Get Recommendations: http://localhost:8084/api/recommendations
+
+View Anomaly Alerts: Watch the console output of the anomaly-detection-service.
+>>>>>>> 39d651ae6aa868f76dc87be0a2df3e50520760ee
