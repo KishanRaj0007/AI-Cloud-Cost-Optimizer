@@ -81,3 +81,32 @@ Follow these instructions to get the project running on your local machine.
 ## Running the Project
 The project contains **four microservices** that must be run in the correct order.
 
+### 1. Clone the Repository:
+`git clone <your-repo-url>`
+
+### 2. Start the infrastructure
+Navigate to the root directory of the project (where docker-compose.yml is located) and run:
+`docker-compose up -d`
+This will start the Kafka, Zookeeper, and MongoDB containers.
+
+### 3. Start the data pipeline:
+Open two separate terminals.
+- In the first terminal, navigate to the producer-service folder and run: `mvn spring-boot:run`
+- In the second terminal, navigate to the consumer-service folder and run: `mvn spring-boot:run`
+- Let these run for at least 1-2 minutes to generate sufficient historical data.
+
+### 4. Start the analytical services:
+You can now start the other services in any order in new terminals.
+- Navigate to forecasting-service and run: `mvn spring-boot:run`
+- Navigate to anomaly-detection-service and run: `mvn spring-boot:run`
+- Navigate to recommendation-service and run: `mvn spring-boot:run`
+
+### 5. Test the API Endpoints:
+- Get Forecast: `http://localhost:8082/api/forecast?days=7`
+- Get Recommendations: `http://localhost:8084/api/recommendations`
+- View Anomaly Alerts: Watch the console output of the anomaly-detection-service.
+
+---
+
+# Thanks !!
+
