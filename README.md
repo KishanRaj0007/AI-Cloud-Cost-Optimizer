@@ -1,4 +1,4 @@
-AI-Powered Cloud Cost Optimizer
+*AI-Powered Cloud Cost Optimizer*
 Overview
 This project is a backend system designed to help companies reduce their cloud spending on platforms like AWS, GCP, or Azure. It moves beyond simple cost reporting by using a microservice architecture and machine learning to proactively forecast future costs, detect spending anomalies in real-time, and recommend specific, actionable changes to optimize resource allocation.
 
