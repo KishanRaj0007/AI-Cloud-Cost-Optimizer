@@ -48,11 +48,11 @@ This project provides a data-driven solution featuring:
 ## **Key Results (Based on Test Set Validation)**
 
 * **Forecasting Model (LSTM):** Achieved an MAE of **\[0.0550\]** and RMSE of **\[0.0583\]** in predicting hourly cost.
-![validate forecast](validate forecast.png)
+![validate forecast](validate_forecast.png)
 * **Anomaly Detection Model (Isolation Forest):** Successfully identified **\[7.00%\]** of test records as anomalous based on CPU/Memory usage.  
-![validate anomaly](validate anomaly.png)
+![validate anomaly](validate_anomaly.png)
 * **Recommendation Model (XGBoost):** Predicted the correct scaling action with **\[99.50%\]** accuracy on unseen data.
-![System LLD](validate recommendation.png)
+![System LLD](validate_recommendation.png)
 
 ## **Setup & Running Instructions**
 
