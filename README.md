@@ -1,109 +1,92 @@
-# AI-Powered Cloud Cost Optimizer
+# **AI-Powered Cloud Resource Manager**
 
-## Overview
-This project is a backend system designed to help companies reduce their cloud spending on platforms like **AWS**, **GCP**, or **Azure**.  
-It moves beyond simple cost reporting by using a **microservice architecture** and **machine learning** to proactively forecast future costs, detect spending anomalies in real time, and recommend specific, actionable changes to optimize resource allocation.
+## **Overview**
 
-The entire system is built on an **event-driven architecture** using **Apache Kafka** to stream billing and performance data between independent, specialized services.
+This project implements an intelligent backend system designed to analyze cloud resource usage patterns, forecast costs, detect anomalies, and recommend optimal scaling actions. It moves beyond traditional reactive monitoring by leveraging machine learning models trained on real-world data to provide verifiable, proactive insights for cloud cost optimization and operational efficiency.
 
----
+The system utilizes a hybrid microservice architecture, combining Java/Spring Boot for robust data ingestion via Kafka and MongoDB, and Python/Flask for advanced ML analytics using TensorFlow, Scikit-learn, and XGBoost.
 
-## The Problem and Our Solution
+## **The Problem**
 
-### The Problem
-Companies regularly overspend by **20–40%** on cloud resources due to overprovisioning, idle resources, and inefficient scaling.  
-Current solutions like **AWS Cost Explorer** are reactive — they show what you’ve already spent, but they don’t help prevent future overspending.
+Cloud platforms offer flexibility but often result in significant overspending due to overprovisioning and inefficient resource allocation. Standard cloud monitoring tools typically provide historical dashboards, lacking predictive capabilities or actionable, data-driven recommendations for optimization based on specific workload behavior. Validating optimization strategies also requires realistic data and quantifiable results.
 
-### Our Solution
-This project provides a **proactive, AI-driven solution**.  
-It acts as an **intelligent financial advisor** for cloud infrastructure by providing three key capabilities that traditional dashboards lack:
+## **Solution**
 
-- **Forecasting:** Uses time-series ML models like **ARIMA** to predict future spending for better budget planning.  
-- **Real-Time Anomaly Detection:** Uses models like **Isolation Forest** to monitor live cost data and alert on unusual spikes.  
-- **Intelligent Recommendations:** Analyzes performance profiles (CPU, Memory) to provide **“right-sizing”** recommendations — suggesting cheaper instance types that better match workloads and reduce costs.
+This project provides a data-driven solution featuring:
 
----
+1. **Real-World Data Pipeline:** Ingests and processes a large Kaggle dataset ("Multi-Cloud Resource Dataset") representing dynamic cloud workloads using Java, Kafka, and MongoDB.  
+2. **ML Analytics Engine (Python):** A dedicated service performs:  
+   * **Cost Forecasting:** An LSTM deep learning model predicts future costs based on historical cost, RAM, and price-per-hour trends.  
+   * **Anomaly Detection:** An Isolation Forest model identifies unusual operational behavior based on CPU and Memory usage patterns.  
+   * **Scaling Recommendations:** An XGBoost classifier predicts optimal scaling actions (`scale_up`, `scale_down`, `no_action`) based on current CPU/Memory usage and allocated vCPU/RAM.  
+3. **Verifiable Results:** All models are rigorously trained and validated using a time-based 80/20 split on the real dataset, providing quantifiable metrics (MAE, RMSE, Anomaly %, Accuracy).
 
-## Features
-- **Real-Time Data Ingestion:** Scalable data pipeline built with **Spring Boot** and **Apache Kafka** to ingest and process billing data.  
-- **AI-Powered Cost Forecasting:** API endpoint providing an *N-day forecast* of future cloud costs based on historical trends.  
-- **Real-Time Anomaly Detection:** Streaming service that monitors costs as they happen and prints alerts when anomalies are detected.  
-- **Intelligent Right-Sizing Recommendations:** API endpoint that returns a list of overprovisioned **EC2 instances**, suggesting cost-effective alternatives and estimated monthly savings.
+## **System Architecture**
+![System LLD](architecture.png)
 
----
+## **Tech Stack**
 
-## Tech Stack
-- **Backend:** Java 17, Spring Boot 3  
-- **Messaging/Streaming:** Apache Kafka  
-- **Database:** MongoDB  
-- **Machine Learning Libraries:**
-  - Forecasting: `com.github.signaflo:timeseries` (ARIMA Model)
-  - Anomaly Detection: `io.github.haifengl:smile-core` (Isolation Forest)
-- **Containerization:** Docker, Docker Compose  
-- **Build Tool:** Apache Maven  
+* **Backend:** Java 17, Spring Boot 3  
+* **Machine Learning:** Python 3.11, Flask, Pandas, NumPy  
+* **ML Libraries:** TensorFlow/Keras, Scikit-learn, XGBoost, Joblib  
+* **Messaging:** Apache Kafka  
+* **Database:** MongoDB  
+* **Infrastructure:** Docker, Docker Compose
 
----
+## **Features**
 
-## System Architecture
-The system consists of **four independent microservices** communicating through a central **Kafka topic** and using **MongoDB** for persistence.
- 
-![System LLD](LLD.png)
+* **Data Ingestion:** Processes and stores large-scale time-series cloud usage data.  
+* **Cost Forecasting:** Predicts future costs using a validated LSTM model.  
+* **Anomaly Detection:** Identifies statistically significant deviations in CPU/Memory usage using Isolation Forest.  
+* **Intelligent Scaling Recommendations:** Predicts appropriate scaling actions (`scale_up`/`scale_down`/`no_action`) using a high-accuracy XGBoost classifier.  
+* **API-Driven:** Exposes REST endpoints for training and validating ML models.
 
----
+## **Dataset Used**
 
-## Project Demo
+* [**Multi-Cloud Resource Dataset (Kaggle)**](https://www.kaggle.com/datasets/freshersstaff/multi-cloud-resource-dataset)**:** Contains \~1000 (limited for dev) time-series records of multi-cloud workload activity, including usage metrics, configuration, cost, and scaling actions.
 
-### Anomaly Detection in Action
-The system successfully identifies an anomalous cost spike in the real-time data stream.
- 
-![Anomaly Detected](Anomaly.png)
+## **Key Results (Based on Test Set Validation)**
 
-### Right-Sizing Recommendations
-The recommendation engine analyzes workload profiles and suggests more cost-effective instance types.
- 
-![Right-Sizing Recommendation](Recommendation.png)
+* **Forecasting Model (LSTM):** Achieved an MAE of **\[0.0550\]** and RMSE of **\[0.0583\]** in predicting hourly cost.
+![validate forecast](validate forecast.png)
+* **Anomaly Detection Model (Isolation Forest):** Successfully identified **\[7.00%\]** of test records as anomalous based on CPU/Memory usage.  
+![validate anomaly](validate anomaly.png)
+* **Recommendation Model (XGBoost):** Predicted the correct scaling action with **\[99.50%\]** accuracy on unseen data.
+![System LLD](validate recommendation.png)
 
----
+## **Setup & Running Instructions**
 
-## Getting Started
-Follow these instructions to get the project running on your local machine.
+### **Prerequisites**
 
-### Prerequisites
-- Java 17 JDK  
-- Apache Maven  
-- Docker Desktop  
+* Java 17+ JDK & Maven  
+* Python 3.10+ & Pip  
+* Docker & Docker Compose
 
----
+### **Running the System**
 
-## Running the Project
-The project contains **four microservices** that must be run in the correct order.
+1. **Start Infrastructure (Docker):**  
+   * Navigate to the project root directory.  
+   * Run `docker-compose up`. This starts Kafka, Zookeeper, and MongoDB. Leave this running.  
+2. **Start Java Data Pipeline (Local):**  
+   * Open a **new terminal**. Navigate to `consumer-service` and run `mvn clean spring-boot:run`. Leave running.  
+   * Open **another new terminal**. Navigate to `data-importer-service` and run `mvn clean spring-boot:run`. Wait for it to import data (prints success message).  
+3. **Start Python ML Service (Local):**  
+   * Open **another new terminal**. Navigate to `ml-analytics-service`.  
+   * Activate virtual environment:  
+     * Windows: `venv\Scripts\activate`  
+     * Mac/Linux: `source venv/bin/activate`  
+   * Install dependencies: `pip install -r requirements.txt`  
+   * Run the server: `python app.py`. Leave running.
 
-### 1. Clone the Repository:
-`git clone <your-repo-url>`
+## **API Endpoints (ML Service \- http://localhost:5001)**
 
-### 2. Start the infrastructure
-Navigate to the root directory of the project (where docker-compose.yml is located) and run:
-`docker-compose up -d`
-This will start the Kafka, Zookeeper, and MongoDB containers.
+* **`POST /api/train/forecaster`**: Trains the LSTM cost forecasting model.  
+* **`GET /api/validate/forecaster`**: Validates the forecaster and returns MAE/RMSE.  
+* **`POST /api/train/anomaly`**: Trains the Isolation Forest anomaly detection model.  
+* **`GET /api/validate/anomaly`**: Validates the anomaly detector, returns anomaly count/percentage and details.  
+* **`POST /api/train/recommender`**: Trains the XGBoost scaling recommendation model.  
+* **`GET /api/validate/recommender`**: Validates the recommender and returns accuracy/classification report.  
+* **`GET /api/test-mongo`**: Tests connection to MongoDB and retrieves a sample record.
 
-### 3. Start the data pipeline:
-Open two separate terminals.
-- In the first terminal, navigate to the producer-service folder and run: `mvn spring-boot:run`
-- In the second terminal, navigate to the consumer-service folder and run: `mvn spring-boot:run`
-- Let these run for at least 1-2 minutes to generate sufficient historical data.
 
-### 4. Start the analytical services:
-You can now start the other services in any order in new terminals.
-- Navigate to forecasting-service and run: `mvn spring-boot:run`
-- Navigate to anomaly-detection-service and run: `mvn spring-boot:run`
-- Navigate to recommendation-service and run: `mvn spring-boot:run`
-
-### 5. Test the API Endpoints:
-- Get Forecast: `http://localhost:8082/api/forecast?days=7`
-- Get Recommendations: `http://localhost:8084/api/recommendations`
-- View Anomaly Alerts: Watch the console output of the anomaly-detection-service.
-
----
-
-# Thanks !!
 
