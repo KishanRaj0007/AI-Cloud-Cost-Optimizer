@@ -43,7 +43,7 @@ This project provides a data-driven solution featuring:
 
 ## **Dataset Used**
 
-* [**Multi-Cloud Resource Dataset (Kaggle)**](https://www.kaggle.com/datasets/freshersstaff/multi-cloud-resource-dataset)**:** Contains \~1000 (limited for dev) time-series records of multi-cloud workload activity, including usage metrics, configuration, cost, and scaling actions.
+* [**Multi-Cloud Resource Dataset (Kaggle)**](https://www.kaggle.com/datasets/freshersstaff/multi-cloud-resource-dataset)**:** Contains \~1000 time-series records of multi-cloud workload activity, including usage metrics, configuration, cost, and scaling actions.
 
 ## **Key Results (Based on Test Set Validation)**
 
