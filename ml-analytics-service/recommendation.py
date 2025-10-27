@@ -10,8 +10,7 @@ import traceback
 
 from data_loader import load_and_split_data
 
-# --- Constants ---
-RECOMMENDER_MODEL_PATH = "recommender_model_xgb.joblib" # Updated model name
+RECOMMENDER_MODEL_PATH = "recommender_model_xgb.joblib"
 LABEL_ENCODER_PATH = "recommender_label_encoder.joblib"
 FEATURES_FOR_RECOMMENDER = ['cpuUsage', 'memoryUsage', 'vCPU', 'ramGb']
 TARGET_COLUMN = 'target'
@@ -24,7 +23,6 @@ def train_recommender_model():
     try:
         print("Starting Recommender (XGBoost) model training...")
 
-        # --- Step 1: Load and Prepare Training Data (Same as before) ---
         train_df, _ = load_and_split_data()
         print(f"Loaded {len(train_df)} records for training.")
 
@@ -45,15 +43,13 @@ def train_recommender_model():
         y_cleaned = combined_df_cleaned[TARGET_COLUMN]
         print(f"Using {final_count} valid records for training.")
 
-        # --- Step 2: Encode Categorical Target Variable (Same as before) ---
         label_encoder = LabelEncoder()
-        # Ensure mapping is consistent if target contains mixed types or NaNs not caught
         y_encoded = label_encoder.fit_transform(y_cleaned.astype(str))
         print("Target labels encoded:", dict(zip(label_encoder.classes_, label_encoder.transform(label_encoder.classes_))))
         joblib.dump(label_encoder, LABEL_ENCODER_PATH)
         print(f"Label encoder saved to {LABEL_ENCODER_PATH}")
 
-        # --- Step 3: Initialize and Train the XGBoost Classifier ---
+        # Initialize and Train the XGBoost Classifier
         print("Initializing XGBClassifier...")
         # Common XGBoost parameters:
         # n_estimators: Number of boosting rounds (trees).
@@ -94,7 +90,6 @@ def train_recommender_model():
         traceback.print_exc()
         return {"status": "error", "message": str(e)}
 
-# --- Placeholder for validation and prediction functions ---
 def validate_recommender_model():
     """
     Loads the trained XGBoost model and validates it against the test set.
@@ -103,7 +98,7 @@ def validate_recommender_model():
     try:
         print("Starting Recommender (XGBoost) model validation...")
 
-        # --- Step 1: Load Model, Encoder, and Test Data ---
+        # Load Model, Encoder, and Test Data ---
         if not os.path.exists(RECOMMENDER_MODEL_PATH) or not os.path.exists(LABEL_ENCODER_PATH):
             return {
                 "status": "error",
@@ -119,7 +114,7 @@ def validate_recommender_model():
         _, test_df = load_and_split_data()
         print(f"Loaded {len(test_df)} records for validation.")
 
-        # --- Step 2: Prepare Test Data ---
+        # Prepare Test Data ---
         X_test_raw = test_df[FEATURES_FOR_RECOMMENDER]
         y_test_raw = test_df[TARGET_COLUMN]
 
@@ -141,22 +136,19 @@ def validate_recommender_model():
         # Encode the true labels from the test set for comparison
         y_test_encoded = label_encoder.transform(y_test_cleaned_labels.astype(str))
 
-        # --- Step 3: Make Predictions ---
+        # Make Predictions ---
         print("Predicting scaling actions on the test set...")
         predictions_encoded = model.predict(X_test_cleaned)
 
-        # --- Step 4: Evaluate Performance ---
+        #Evaluate Performance ---
         accuracy = accuracy_score(y_test_encoded, predictions_encoded)
-        # Generate a report with precision, recall, f1-score per class
+        # Generate repory
         report_dict = classification_report(y_test_encoded, predictions_encoded,
                                             target_names=label_encoder.classes_, # Use original class names
                                             output_dict=True, zero_division=0)
 
         print(f"✅ Validation complete. Accuracy: {accuracy:.4f}")
-        # Optionally print the report to console for quick view
-        # print("Classification Report:\n", classification_report(y_test_encoded, predictions_encoded, target_names=label_encoder.classes_, zero_division=0))
-
-        # --- Step 5: Return Results ---
+    
         return {
             "status": "success",
             "message": "Recommender (XGBoost) model validated successfully.",

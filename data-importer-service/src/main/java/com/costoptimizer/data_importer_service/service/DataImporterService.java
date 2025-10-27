@@ -28,24 +28,24 @@ public class DataImporterService implements CommandLineRunner {
     @Autowired
     private KafkaTemplate<String, CloudData> kafkaTemplate;
 
-    // The exact timestamp format from your dataset
+    // Exact timestamp format from our dataset
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Override
     public void run(String... args) throws Exception {
         System.out.println("Starting data import from multi_cloud_dataset.csv...");
 
-        String csvFile = "multi_cloud_dataset.csv"; // Correct filename
+        String csvFile = "multi_cloud_dataset.csv";
         String line = "";
         String csvSplitBy = ",";
         int lineCount = 0;
         int skippedLines = 0;
 
-        // The timestamp format is "yyyy-MM-dd HH:mm:ss"
+        // format is "yyyy-MM-dd HH:mm:ss"
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
-            // Read the header line to get column indexes
+            // Reading header line to get column indexes
             String headerLine = br.readLine();
             if (headerLine == null) {
                 System.err.println("Error: CSV file is empty or header is missing.");
@@ -54,11 +54,11 @@ public class DataImporterService implements CommandLineRunner {
             Map<String, Integer> headers = new HashMap<>();
             String[] headerParts = headerLine.split(csvSplitBy);
             for (int i = 0; i < headerParts.length; i++) {
-                // Store header names without leading/trailing spaces
+                // Storing header names without leading/trailing spaces
                 headers.put(headerParts[i].trim().toLowerCase(), i); // Use lowercase for easier lookup
             }
 
-            // Verify essential headers exist
+            // Verifying essential headers exist
             List<String> essentialHeaders = List.of("timestamp", "cpu_usage", "memory_usage", "net_io", "disk_io",
                                                     "cloud_provider", "region", "vm_type", "vcpu", "ram_gb",
                                                     "price_per_hour", "target", "latency_ms", "throughput", "cost", "utilization");
@@ -76,9 +76,9 @@ public class DataImporterService implements CommandLineRunner {
                     continue;
                 }
 
-                String[] data = line.split(csvSplitBy, -1); // Use -1 limit to keep trailing empty strings
+                String[] data = line.split(csvSplitBy, -1); // Using -1 limit to keep trailing empty strings
 
-                // Basic validation: Check if row has expected number of columns
+                // Checking if row has expected number of columns
                 if (data.length != headerParts.length) {
                 System.err.println("Warning: Skipping malformed line (expected " + headerParts.length + " columns, got " + data.length + "): " + line);
                 skippedLines++;
@@ -109,7 +109,7 @@ public class DataImporterService implements CommandLineRunner {
                     cloudData.setCost(parseDouble(data[headers.get("cost")]));
                     cloudData.setUtilization(parseDouble(data[headers.get("utilization")]));
 
-                    // Send to Kafka
+                    // Sending to Kafka - my love
                     kafkaTemplate.send(topicName, cloudData);
                     lineCount++;
 
@@ -121,7 +121,7 @@ public class DataImporterService implements CommandLineRunner {
                 skippedLines++;
                 e.printStackTrace(); // Print stack trace for unexpected errors
                 }
-                if (lineCount >= 1000) { // Keep the limit for now
+                if (lineCount >= 1000) { // Keeping for now, baad me manage kar lenge
                     System.out.println("Reached import limit of 1000 records.");
                     break;
                 }
@@ -137,7 +137,7 @@ public class DataImporterService implements CommandLineRunner {
         }
     }
 
-    // Helper methods to handle potential empty strings before parsing
+    // Handling potential empty strings before parsing
     private Double parseDouble(String value) {
         return (value == null || value.trim().isEmpty()) ? null : Double.parseDouble(value.trim());
     }

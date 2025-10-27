@@ -36,7 +36,7 @@ public class CloudData {
     private Double cost; // This is likely calculated, let's keep it
     private Double utilization;
 
-    // We can probably ignore these Kaggle columns for now:
+    // These columns are no needed for any of our services
     // power_consumption, num_executed_instructions, execution_time,
     // energy_efficiency, task_type, task_priority, task_status
 }

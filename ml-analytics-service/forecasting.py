@@ -14,31 +14,24 @@ import traceback
 from sklearn.preprocessing import StandardScaler
 
 
-# --- Constants ---
 MODEL_PATH = "forecasting_model_multi_config.keras"
 SEQUENCE_LENGTH = 24
-# --- UPDATED FEATURES ---
-# Use the correct field names from the Java model / MongoDB
 FEATURES = ['cost', 'ramGb', 'pricePerHour']
 # -------------------------
 TARGET_FEATURE_INDEX = FEATURES.index('cost')
 
 def _preprocess_data_multi(df):
     """Prepares the data for the Multivariate LSTM model using selected features."""
-    # 1. Select only the target features
     data = df[FEATURES].values
 
-    # 2. Scale the data
     scaler = MinMaxScaler(feature_range=(0, 1))
     scaled_data = scaler.fit_transform(data)
 
-    # 3. Create sequences
     X, y = [], []
     for i in range(SEQUENCE_LENGTH, len(scaled_data)):
         X.append(scaled_data[i-SEQUENCE_LENGTH:i])    
-        y.append(scaled_data[i, TARGET_FEATURE_INDEX]) # The next 'cost'
+        y.append(scaled_data[i, TARGET_FEATURE_INDEX])
 
-    # Reshape X to be [samples, time steps, num_features]
     X = np.array(X)
     return X, np.array(y), scaler
 
@@ -51,18 +44,16 @@ def _build_model_multi(input_shape):
 
     # --- Layer 1 ---
     model.add(LSTM(units=50, return_sequences=True, input_shape=input_shape))
-    model.add(BatchNormalization()) # Normalize outputs of the first LSTM
+    model.add(BatchNormalization())
 
     # --- Layer 2 ---
     model.add(LSTM(units=50))
-    model.add(BatchNormalization()) # Normalize outputs of the second LSTM
+    model.add(BatchNormalization())
 
     # --- Dense Layers ---
-    model.add(Dense(units=25, activation='relu')) # Explicitly add activation
-    model.add(Dense(units=1)) # Final output layer
+    model.add(Dense(units=25, activation='relu'))
+    model.add(Dense(units=1))
 
-    # --- Optimizer ---
-    # Further reduced learning rate
     optimizer = Adam(learning_rate=0.0005, clipnorm=1.0)
     # ------------------
 
@@ -80,15 +71,12 @@ def train_forecasting_model():
         print("Starting Config-Multivariate LSTM model training...")
         X_train, y_train, _ = _preprocess_data_multi(train_df)
 
-        # input_shape = (sequence_length, num_features)
         input_shape = (X_train.shape[1], X_train.shape[2])
 
         model = _build_model_multi(input_shape)
         
-        # Train the model
         model.fit(X_train, y_train, epochs=100, batch_size=32, verbose=1)
 
-        # Save the trained model
         model.save(MODEL_PATH)
 
         print(f" Config-Multivariate LSTM forecasting model trained and saved to {MODEL_PATH}")
@@ -116,26 +104,21 @@ def validate_forecasting_model():
         train_df, test_df = load_and_split_data()
         print("Starting Multivariate LSTM validation (MAE + RMSE)...")
 
-        # --- Scale data (MinMaxScaler used if trained with it) ---
         scaler = MinMaxScaler(feature_range=(0, 1))
         scaler.fit(train_df[FEATURES])
         scaled_test = scaler.transform(test_df[FEATURES])
 
-        # --- Create sequences ---
         X_test, y_test_scaled = [], []
         for i in range(SEQUENCE_LENGTH, len(scaled_test)):
-            X_test.append(scaled_test[i-SEQUENCE_LENGTH:i])        # Keep all features
-            y_test_scaled.append(scaled_test[i, TARGET_FEATURE_INDEX])  # cost only
+            X_test.append(scaled_test[i-SEQUENCE_LENGTH:i])      
+            y_test_scaled.append(scaled_test[i, TARGET_FEATURE_INDEX]) 
 
         X_test = np.array(X_test)
         y_test_scaled = np.array(y_test_scaled)
 
-        # --- Load model & predict ---
         model = load_model(MODEL_PATH)
         predictions_scaled = model.predict(X_test)
 
-        # --- Inverse transform predictions & actuals ---
-        # Use dummy array to inverse transform
         dummy_pred = np.zeros((len(predictions_scaled), len(FEATURES)))
         dummy_pred[:, TARGET_FEATURE_INDEX] = predictions_scaled.ravel()
         predictions_real = scaler.inverse_transform(dummy_pred)[:, TARGET_FEATURE_INDEX]
@@ -144,12 +127,10 @@ def validate_forecasting_model():
         dummy_y[:, TARGET_FEATURE_INDEX] = y_test_scaled.ravel()
         y_test_real = scaler.inverse_transform(dummy_y)[:, TARGET_FEATURE_INDEX]
 
-        # --- Filter invalid data ---
         valid_mask = (~np.isnan(predictions_real)) & (~np.isnan(y_test_real))
         y_test_real = y_test_real[valid_mask]
         predictions_real = predictions_real[valid_mask]
 
-        # --- Metrics ---
         if len(y_test_real) == 0:
             mae = 0.0
             rmse = 0.0

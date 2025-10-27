@@ -127,7 +127,6 @@ def validate_anomaly_route():
         return jsonify(result), 500
     return jsonify(result), 200
 
-# --- RECOMMENDER ENDPOINTS ---
 
 @app.route("/api/train/recommender", methods=["POST"])
 def train_recommender_route():
@@ -135,27 +134,23 @@ def train_recommender_route():
     print("Received request to train recommendation model...")
     result_raw = train_recommender_model() # Get the raw result
 
-    # --- Convert NumPy types before returning ---
     try:
         result = convert_types(result_raw)
     except Exception as e:
          print(f"❌ Error converting result types for JSON: {str(e)}")
-         # Return the raw result with an error status if conversion fails
          return jsonify({"status": "error", "message": "Failed to serialize result types."}), 500
     # ---------------------------------------------
 
     if result.get("status") == "error":
         return jsonify(result), 500
-    return jsonify(result), 200 # Return the converted result
+    return jsonify(result), 200
 
-# --- ADD THIS NEW ROUTE ---
 @app.route("/api/validate/recommender", methods=["GET"])
 def validate_recommender_route():
     """ Validates the trained recommendation model on the test set. """
     print("Received request to validate recommendation model...")
-    result_raw = validate_recommender_model() # Call the imported function
+    result_raw = validate_recommender_model()
 
-    # Convert potential numpy types in the report dictionary
     try:
         result = convert_types(result_raw)
     except Exception as e:
