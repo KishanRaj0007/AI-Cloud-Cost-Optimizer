@@ -78,7 +78,7 @@ This project provides a data-driven solution featuring:
    * Install dependencies: `pip install -r requirements.txt`  
    * Run the server: `python app.py`. Leave running.
 
-## **API Endpoints (ML Service \- http://localhost:5001)**
+## **API Endpoints (ML Service \- @localhost:5001)**
 
 * **`POST /api/train/forecaster`**: Trains the LSTM cost forecasting model.  
 * **`GET /api/validate/forecaster`**: Validates the forecaster and returns MAE/RMSE.  
