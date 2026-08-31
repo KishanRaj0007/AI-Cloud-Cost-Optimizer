@@ -15,7 +15,6 @@ public class CloudDataConsumer {
     @KafkaListener(topics = "${topic.name}", groupId = "cloud-data-group")
     public void listen(CloudData data) {
         repository.save(data);
-        // We'll log every 100th message to avoid spamming the console
         String id = data.getId();
         if(id != null && id.length() >= 2) {
             int hexValue = Integer.parseInt(id.substring(0, 2), 16);

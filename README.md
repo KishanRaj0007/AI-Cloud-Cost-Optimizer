@@ -71,9 +71,10 @@ This project provides a data-driven solution featuring:
    * Open a **new terminal**. Navigate to `consumer-service` and run `mvn clean spring-boot:run`. Leave running.  
    * Open **another new terminal**. Navigate to `data-importer-service` and run `mvn clean spring-boot:run`. Wait for it to import data (prints success message).  
 3. **Start Python ML Service (Local):**  
-   * Open **another new terminal**. Navigate to `ml-analytics-service`.  
+   * Open **Command Prompt**. Navigate to `ml-analytics-service`.  
+   * Create virtual environment: `python -m venv venv`
    * Activate virtual environment:  
-     * Windows: `venv\Scripts\activate`  
+     * Windows: `.\venv\Scripts\activate`  
      * Mac/Linux: `source venv/bin/activate`  
    * Install dependencies: `pip install -r requirements.txt`  
    * Run the server: `python app.py`. Leave running.
